@@ -8,7 +8,7 @@ import sys
 from geopy.geocoders import Nominatim
 import geocoder
 
-mytoken = "your distinct token"
+mytoken = "pXrEKHJMAIgWTJjjDbofqdYFJitWVAQp"
 
 #Get 3 months prior
 initdate = datetime.datetime.now()-datetime.timedelta(days=90)
@@ -24,16 +24,24 @@ usercords = (g.latlng)
 #Use Geolocater to reverse geocode the coordinates for an address
 geolocator = Nominatim(user_agent="Ice_calculator")
 location = geolocator.reverse(usercords)
-#Isolate the ZIP code to run against the database
+#Isolate the ZIP code to run against the database.
 user_location = location.address
 chopped = user_location.split(',')
-twozips = chopped[6]
-pickfirst = twozips.split('-')
-user_zip = pickfirst[0]
-fork = str(user_zip)
-
+print(chopped)
+for components in chopped:
+    components = components.split('-')
+    if len(components)== 2 :
+        twozips = components
+        break
+    else:
+        continue
+user_zip = select.lstrip()
+cleanzip = "ZIP:" + user_zip
+finalzip = cleanzip.strip('')
 #Location key for the region you are interested in (can be found on NOAA or requested as a different API as well)
-locationid = 'ZIP:(fork)' #location id for Michigan
+locationid = finalzip #location id for Michigan
+print(locationid)
+
 datasetid = 'GHCND' #datset id for "Daily Summaries"
 
 base_url_data = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/data'
