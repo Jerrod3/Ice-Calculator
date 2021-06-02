@@ -1,31 +1,41 @@
-from NOAAweather import rainfall, snowfall, groundsnow, tempmax, tempmin
+from NOAAweather import rainfall, snowfall, groundsnow, tempmax, tempmin, windavg
 
-print(rainfall)
-print(snowfall)
+def countyboi(param):
+    cumulative_inches = 0
+    for tup in param:
+        inches = tup[1]
+        cumulative_inches = cumulative_inches + inches
+    return cumulative_inches
+cumulative_inches_snow = countyboi(snowfall)
+cumulative_inches_rain = countyboi(rainfall)
+snow_cover = countyboi(groundsnow)
 
-cumlative_inches_rain = 0
-cumulative_inches_snow = 0
-for i in rainfall :
-    cumlative_inches_rain = cumlative_inches_rain + int(i[1])
+def avgtemp(tempmax, tempin):
+    Average = []
+    DD = 0
+    for x,n in zip(tempmax, tempin):
+        Day = x[0]
+        Max = x[1]
+        print(Max)
+        Min = n[1]
+        print(Min)
+        daily_DD = 32 - ((Max + Min)/2)
+        Average.append(tuple((Day,daily_DD)))
+        if daily_DD < 0 :
+            daily_DD = 0
+            print(daily_DD)
+        else :
+            DD = daily_DD + DD
+            print(DD)
+    return DD, Average
+print(avgtemp(tempmax,tempmin))
 
-print(cumlative_inches_rain)
 
-for i in snowfall :
-    cumulative_inches_snow = cumulative_inches_snow + int(i[1])
 
-print(cumulative_inches_snow)
 
-print(groundsnow)
 
-inst_snowcover = 0
-for i in groundsnow :
-    inst_snowcover = inst_snowcover + 1
-try:
-    current_snow_cover = groundsnow[(int(inst_snowcover))-1]
-    if current_snow_cover > cumulative_inches_snow :
-        cumulative_inches_snow = current_snow_cover
-except:
-    print("No snow values")
 
-print(tempmax)
-print(tempmin)
+
+# Need to get daily averages that build based on historical daily amounts
+# Need to get lake data (possibly on front end)
+# Need to re-route ZIP finder to go to next ZIP if no data is available

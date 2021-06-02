@@ -9,7 +9,7 @@ from geopy.geocoders import Nominatim
 import geocoder
 import sqlite3
 
-mytoken = "pXrEKHJMAIgWTJjjDbofqdYFJitWVAQp"
+mytoken = "Your token"
 
 #Get 3 months prior
 initdate = datetime.datetime.now()-datetime.timedelta(days=90)
@@ -30,17 +30,36 @@ location = geolocator.reverse(usercords)
 #Isolate the ZIP code to run against the database.
 user_location = location.address
 chopped = user_location.split(',')
-print(chopped)
 nospace = []
 for i in chopped :
     a = i.lstrip()
     nospace.append(a)
-ziponly = [x for x in nospace if x.isdigit() or "-" in x]
+print(nospace)
+ziponly = []
+for scope in nospace :
+    if scope == nospace[0] :
+        continue
+    place = scope[0].isdigit()
+    if place == True :
+        ziponly.append(scope)
+        break
+    else:
+        continue
+if any("-" in x for x in ziponly) :
+    empty = ''
+    whole = empty.join(ziponly)
+    cut = whole.split("-")
+    splitzip = whole[0]
+    print(splitzip)
+else:
+    splitzip = ziponly[0]
+print(splitzip)
 #sometimes ziponly picks up on a number that is not the zip code, need to fix
-print(ziponly)
-user_zip = ziponly[0]
+user_zip = splitzip
+print(user_zip)
 cleanzip = "ZIP:" + user_zip
 finalzip = cleanzip.strip('')
+print(finalzip)
 # See if the ZIP code is available for NOAA's daily value dataset (GHCND),
 # otherwise, find the nearest ZIP code to plugin
 conn = sqlite3.connect('zipdb.sqlite')
@@ -72,7 +91,7 @@ def zip_finder(myzip):
                 continue
 print(zip_finder(finalzip))
 
-locationid = 'ZIP:92101'
+locationid = "ZIP:00007"        #"ZIP:92101"  #zip_finder(finalzip)
 print(locationid)
 datasetid = 'GHCND' #datset id for "Daily Summaries"
 
@@ -104,13 +123,16 @@ def get_weather(locationid, datasetid, begin_date, end_date, mytoken, base_url):
 df_weather = get_weather(locationid, datasetid, begin_date, end_date, mytoken, base_url_data)
 print(df_weather)
 
-smegma = df_weather[["date","datatype", "value"]]
-plist = smegma.values.tolist()
+#Maybe turn this transformation of data into a function? Very ugly
+
+compressed = df_weather[["date","datatype", "value"]]
+plist = compressed.values.tolist()
 rainfall = []
 snowfall = []
 groundsnow = []
 tempmax = []
 tempmin = []
+windavg = []
 
 for i in plist :
     if i[1] == 'PRCP' :
@@ -123,6 +145,8 @@ for i in plist :
         tempmax.append(i)
     elif i[1] == 'TMIN' :
         tempmin.append(i)
+    elif i[1] == 'AWND' :
+        windavg.append(i)
     else :
         continue
 count_rain = 0
@@ -130,6 +154,7 @@ count_snow = 0
 count_ground = 0
 count_tmax = 0
 count_tmin = 0
+count_wind = 0
 for i in rainfall :
     i.remove("PRCP")
     count_rain = count_rain + 1
@@ -150,6 +175,7 @@ for i in tempmin :
     i.remove("TMIN")
     count_tmin = count_tmin + 1
     i[0] = count_tmin
-
-
-print(groundsnow)
+for i in windavg :
+    i.remove("AWND")
+    count_wind = count_wind + 1
+    i[0] = count_wind
