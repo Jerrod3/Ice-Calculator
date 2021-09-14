@@ -9,9 +9,9 @@ from geopy.geocoders import Nominatim
 import geocoder
 import sqlite3
 
-mytoken = "Your token"
+mytoken = "pXrEKHJMAIgWTJjjDbofqdYFJitWVAQp"
 
-#Get 3 months prior
+#Get weather data from 3 months prior
 initdate = datetime.datetime.now()-datetime.timedelta(days=90)
 #split the string to get an acceptable date value for NOAA
 stringdate = str(initdate)
